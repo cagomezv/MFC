@@ -1,0 +1,37 @@
+PROGRAM main
+  implicit none
+  integer::i,j,N,k
+  real(8),allocatable::A(:,:),d(:),e(:)
+  character(len=8)::ch
+  
+  !lee archivo input
+  open(1,file='matriz.inp',status='old',err=12)
+  read(1,*,err=12)ch,N
+  allocate(A(N,N),d(N),e(N))
+  A=0.d0; d=0.d0; e=0.d0
+  read(1,*)ch
+  do i=1,N
+     read(1,*,err=12)(A(i,j),j=1,N)
+  end do
+  close(1)
+
+  !subrutina para obtener la matriz tri-diagonal
+  call tridiagon(A,N,d,e)
+
+  !subrutina de diagonalizacion
+  call diagotri(d,e,N,A,.true.)
+
+  !resultados
+  write(6,*)'autovalores:'
+  write(6,"(10(F7.4,1x))")(d(i),i=1,N)
+  
+  write(6,*)'autovectores(si uso .true. la columna corresponde a',&
+       ' cada autovalor):'
+  do i=1,N
+     write(6,"(10(F7.4,1x))")(A(i,j),j=1,N)
+  end do
+
+  STOP
+12 write(6,*)'ERROR en el archivo matriz.inp'
+
+END PROGRAM main
